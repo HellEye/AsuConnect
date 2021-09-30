@@ -7,7 +7,7 @@ type GeneratorReturns<D extends Document> =
 	| Promise<Nullable<D>>
 	| Promise<void>
 
-type GenFunctionPlaceholder<D extends Document> = () => void
+type GenFunctionPlaceholder<D extends Document> = () => never
 
 type GenFunctionEmpty<D extends Document> = () => GeneratorReturns<D>
 
@@ -70,11 +70,17 @@ export type GetCrudReturn<D extends Document> = {
 	many: GenCrudMany<D>
 }
 
+export type GeneratorInput<D extends Document> = {
+	findObj: Partial<D>
+	data: Partial<D> | Partial<D>[]
+}
+
 const generators: { [key: string]: any } = {
 	getOne: <D extends Document>(model: Model<D>, key: string) => {
-		return async (value: any): Promise<Nullable<D>> => {
-			const findObj: { [key: string]: any } = {}
-			findObj[key] = value
+		return async ({
+			findObj,
+			data,
+		}: GeneratorInput<D>): Promise<Nullable<D>> => {
 			return await model.findOne(findObj as any).catch((e) => {
 				throw e
 			})
@@ -82,9 +88,7 @@ const generators: { [key: string]: any } = {
 	},
 	getMany:
 		<D extends Document>(model: Model<D>, key: string) =>
-		async (values: any | any[]): Promise<D[]> => {
-			const findObj: { [key: string]: any | any[] } = {}
-			findObj[key] = values
+		async ({ findObj, data }: GeneratorInput<D>): Promise<D[]> => {
 			return await model.find(findObj as any).catch((e) => {
 				throw e
 			})
@@ -92,26 +96,24 @@ const generators: { [key: string]: any } = {
 
 	insertOne:
 		<D extends Document>(model: Model<D>) =>
-		async (obj: Partial<D>): Promise<D> => {
-			return await model.create(obj).catch((e) => {
+		async ({ findObj, data }: GeneratorInput<D>): Promise<D> => {
+			return await model.create(data).catch((e) => {
 				throw e
 			})
 		},
 	insertMany:
 		<D extends Document>(model: Model<D>) =>
-		async (obj: Partial<D>[]): Promise<D[]> => {
-			return await model.insertMany(obj).catch((e) => {
+		async ({ findObj, data }: GeneratorInput<D>): Promise<D[]> => {
+			return await model.insertMany(data as any).catch((e) => {
 				throw e
 			})
 		},
 
 	updateOne:
 		<D extends Document>(model: Model<D>, key: string) =>
-		async (value: any, obj: Partial<D>) => {
-			const findObj: { [key: string]: any } = {}
-			findObj[key] = value
+		async ({ findObj, data }: GeneratorInput<D>) => {
 			return await model
-				.findOneAndUpdate(findObj as any, { $set: { ...obj } } as any, {
+				.findOneAndUpdate(findObj as any, data as any, {
 					new: true,
 				})
 				.catch((e) => {
@@ -121,11 +123,9 @@ const generators: { [key: string]: any } = {
 
 	updateMany:
 		<D extends Document>(model: Model<D>, key: string) =>
-		async (values: any | any[], obj: Partial<D>) => {
-			const findObj: { [key: string]: any | any[] } = {}
-			findObj[key] = values
+		async ({ findObj, data }: GeneratorInput<D>) => {
 			return await model
-				.findOneAndUpdate(findObj as any, { $set: { ...obj } } as any, {
+				.findOneAndUpdate(findObj as any, data as any, {
 					new: true,
 				})
 				.catch((e) => {
@@ -134,9 +134,7 @@ const generators: { [key: string]: any } = {
 		},
 	deleteOne:
 		<D extends Document>(model: Model<D>, key: string) =>
-		async (value: any) => {
-			const findObj: { [key: string]: any } = {}
-			findObj[key] = value
+		async ({ findObj, data }: GeneratorInput<D>) => {
 			return await model.findOneAndDelete(findObj as any).catch((e) => {
 				throw e
 			})
@@ -146,9 +144,7 @@ const generators: { [key: string]: any } = {
 			`You've just generated a deleteMany function for ${model.name}`
 		)
 		console.warn("WARNING, this wrecks stuff if not handled with care!")
-		return async (values: any | any[]) => {
-			const findObj: { [key: string]: any | any[] } = {}
-			findObj[key] = values
+		return async ({ findObj, data }: GeneratorInput<D>) => {
 			return await model.deleteMany(findObj as any).catch((e) => {
 				throw e
 			})
@@ -156,7 +152,7 @@ const generators: { [key: string]: any } = {
 	},
 	getAll:
 		<D extends Document>(model: Model<D>) =>
-		async (): Promise<D[]> => {
+		async ({ findObj, data }: GeneratorInput<D>): Promise<D[]> => {
 			return await model.find({}).catch((e) => {
 				throw e
 			})
@@ -166,7 +162,7 @@ const generators: { [key: string]: any } = {
 		console.warn(
 			"!!!!!WARNING, this really wrecks stuff if not used just for debugging/testing!"
 		)
-		return async () => {
+		return async ({ findObj, data }: GeneratorInput<D>) => {
 			return await model.deleteMany({}).catch((e) => {
 				throw e
 			})
@@ -182,7 +178,11 @@ const getOpKey = (operation: string, many: boolean, key?: string) => {
 }
 const getEmptyOutObj = <D extends Document>(): GenFunctionWithMethod<D> => {
 	return {
-		func: () => {},
+		func: () => {
+			throw Error(
+				"whoopsie, we made a fucky wucky and didn't override this function"
+			)
+		},
 		method: "get",
 	}
 }
