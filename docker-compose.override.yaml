@@ -1,0 +1,44 @@
+version: "3.7"
+
+services:
+  mongo:
+    container_name: mongo
+    image: mongo
+    restart: always
+    volumes:
+      - ./data:/data/db
+    ports:
+      - 27017:27017
+  app:
+    container_name: node
+    restart: always
+    volumes:
+      - ./src:/usr/src
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    env_file: .env.local
+    environment:
+      - PORT=${PORT}
+      - MONGO_URL=${MONGO_URL}
+    ports:
+      - 8081:8081
+    links:
+      - mongo
+    depends_on:
+      - mongo
+  # in case node reload doesn't work
+  # live-reloader:
+  #   image: apogiatzis/livereloading
+  #   container_name: livereloader
+  #   privileged: true
+  #   environment:
+  #     - RELOAD_DELAY=1.5 # seconds
+  #     - RELOAD_CONTAINER=app
+  #   volumes:
+  #     - "/var/run/docker.sock:/var/run/docker.sock"
+  #     - "./src:./usr/src"
+
+volumes:
+  mongo-data:
+    driver: local

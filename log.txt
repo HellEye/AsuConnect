@@ -1,0 +1,70 @@
+Step 1/7 : FROM node:14
+ ---> 9dc0768a6295
+Step 2/7 : WORKDIR /usr
+ ---> Using cache
+ ---> c39757c4eea3
+Step 3/7 : COPY package.json ./
+ ---> Using cache
+ ---> 84ac58da5563
+Step 4/7 : COPY tsconfig.json ./
+ ---> Using cache
+ ---> 179372d459ae
+Step 5/7 : RUN npm install
+ ---> Using cache
+ ---> 252dbb1b8d54
+Step 6/7 : EXPOSE 8081
+ ---> Using cache
+ ---> c9f690b49ab6
+Step 7/7 : CMD ["npm", "run", "watch"]
+ ---> Using cache
+ ---> 9d96ded077e0
+
+Successfully built 9d96ded077e0
+Successfully tagged asu-connect-server_app:latest
+Attaching to mongo, node
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:19.199+00:00"},"s":"I",  "c":"NETWORK",  "id":4915701, "ctx":"thread1","msg":"Initialized wire specification","attr":{"spec":{"incomingExternalClient":{"minWireVersion":0,"maxWireVersion":13},"incomingInternalClient":{"minWireVersion":0,"maxWireVersion":13},"outgoing":{"minWireVersion":0,"maxWireVersion":13},"isInternalClient":true}}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:19.202+00:00"},"s":"I",  "c":"CONTROL",  "id":23285,   "ctx":"thread1","msg":"Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols 'none'"}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:19.202+00:00"},"s":"W",  "c":"ASIO",     "id":22601,   "ctx":"thread1","msg":"No TransportLayer configured during NetworkInterface startup"}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:19.202+00:00"},"s":"I",  "c":"NETWORK",  "id":4648601, "ctx":"thread1","msg":"Implicit TCP FastOpen unavailable. If TCP FastOpen is required, set tcpFastOpenServer, tcpFastOpenClient, and tcpFastOpenQueueSize."}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:19.203+00:00"},"s":"W",  "c":"ASIO",     "id":22601,   "ctx":"thread1","msg":"No TransportLayer configured during NetworkInterface startup"}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:19.203+00:00"},"s":"I",  "c":"REPL",     "id":5123008, "ctx":"thread1","msg":"Successfully registered PrimaryOnlyService","attr":{"service":"TenantMigrationDonorService","ns":"config.tenantMigrationDonors"}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:19.203+00:00"},"s":"I",  "c":"REPL",     "id":5123008, "ctx":"thread1","msg":"Successfully registered PrimaryOnlyService","attr":{"service":"TenantMigrationRecipientService","ns":"config.tenantMigrationRecipients"}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:19.204+00:00"},"s":"I",  "c":"CONTROL",  "id":4615611, "ctx":"initandlisten","msg":"MongoDB starting","attr":{"pid":1,"port":27017,"dbPath":"/data/db","architecture":"64-bit","host":"32d67dff76a1"}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:19.204+00:00"},"s":"I",  "c":"CONTROL",  "id":23403,   "ctx":"initandlisten","msg":"Build Info","attr":{"buildInfo":{"version":"5.0.3","gitVersion":"657fea5a61a74d7a79df7aff8e4bcf0bc742b748","openSSLVersion":"OpenSSL 1.1.1f  31 Mar 2020","modules":[],"allocator":"tcmalloc","environment":{"distmod":"ubuntu2004","distarch":"x86_64","target_arch":"x86_64"}}}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:19.204+00:00"},"s":"I",  "c":"CONTROL",  "id":51765,   "ctx":"initandlisten","msg":"Operating System","attr":{"os":{"name":"Ubuntu","version":"20.04"}}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:19.204+00:00"},"s":"I",  "c":"CONTROL",  "id":21951,   "ctx":"initandlisten","msg":"Options set by command line","attr":{"options":{"net":{"bindIp":"*"}}}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:19.205+00:00"},"s":"I",  "c":"STORAGE",  "id":22270,   "ctx":"initandlisten","msg":"Storage engine to use detected by data files","attr":{"dbpath":"/data/db","storageEngine":"wiredTiger"}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:19.205+00:00"},"s":"I",  "c":"STORAGE",  "id":22297,   "ctx":"initandlisten","msg":"Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem","tags":["startupWarnings"]}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:19.205+00:00"},"s":"I",  "c":"STORAGE",  "id":22315,   "ctx":"initandlisten","msg":"Opening WiredTiger","attr":{"config":"create,cache_size=7339M,session_max=33000,eviction=(threads_min=4,threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),builtin_extension_config=(zstd=(compression_level=6)),file_manager=(close_idle_time=600,close_scan_interval=10,close_handle_minimum=250),statistics_log=(wait=0),verbose=[recovery_progress,checkpoint_progress,compact_progress],"}}
+[33mnode     |[0m 
+[33mnode     |[0m > asu-connect-server@1.0.0 watch /usr
+[33mnode     |[0m > nodemon --watch src src/app.ts
+[33mnode     |[0m 
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:19.858+00:00"},"s":"I",  "c":"STORAGE",  "id":22430,   "ctx":"initandlisten","msg":"WiredTiger message","attr":{"message":"[1632861799:858820][1:0x7fd896313c80], txn-recover: [WT_VERB_RECOVERY_PROGRESS] Recovering log 22 through 23"}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:19.910+00:00"},"s":"I",  "c":"STORAGE",  "id":22430,   "ctx":"initandlisten","msg":"WiredTiger message","attr":{"message":"[1632861799:910317][1:0x7fd896313c80], txn-recover: [WT_VERB_RECOVERY_PROGRESS] Recovering log 23 through 23"}}
+[33mnode     |[0m [33m[nodemon] 2.0.13[39m
+[33mnode     |[0m [33m[nodemon] to restart at any time, enter `rs`[39m
+[33mnode     |[0m [33m[nodemon] watching path(s): src/**/*[39m
+[33mnode     |[0m [33m[nodemon] watching extensions: ts,json[39m
+[33mnode     |[0m [32m[nodemon] starting `ts-node src/app.ts`[39m
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:19.992+00:00"},"s":"I",  "c":"STORAGE",  "id":22430,   "ctx":"initandlisten","msg":"WiredTiger message","attr":{"message":"[1632861799:992200][1:0x7fd896313c80], txn-recover: [WT_VERB_RECOVERY | WT_VERB_RECOVERY_PROGRESS] Main recovery loop: starting at 22/7168 to 23/256"}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:20.078+00:00"},"s":"I",  "c":"STORAGE",  "id":22430,   "ctx":"initandlisten","msg":"WiredTiger message","attr":{"message":"[1632861800:78161][1:0x7fd896313c80], txn-recover: [WT_VERB_RECOVERY_PROGRESS] Recovering log 22 through 23"}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:20.130+00:00"},"s":"I",  "c":"STORAGE",  "id":22430,   "ctx":"initandlisten","msg":"WiredTiger message","attr":{"message":"[1632861800:130692][1:0x7fd896313c80], txn-recover: [WT_VERB_RECOVERY_PROGRESS] Recovering log 23 through 23"}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:20.168+00:00"},"s":"I",  "c":"STORAGE",  "id":22430,   "ctx":"initandlisten","msg":"WiredTiger message","attr":{"message":"[1632861800:168959][1:0x7fd896313c80], txn-recover: [WT_VERB_RECOVERY | WT_VERB_RECOVERY_PROGRESS] Set global recovery timestamp: (0, 0)"}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:20.169+00:00"},"s":"I",  "c":"STORAGE",  "id":22430,   "ctx":"initandlisten","msg":"WiredTiger message","attr":{"message":"[1632861800:169002][1:0x7fd896313c80], txn-recover: [WT_VERB_RECOVERY | WT_VERB_RECOVERY_PROGRESS] Set global oldest timestamp: (0, 0)"}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:20.238+00:00"},"s":"I",  "c":"STORAGE",  "id":22430,   "ctx":"initandlisten","msg":"WiredTiger message","attr":{"message":"[1632861800:238363][1:0x7fd896313c80], WT_SESSION.checkpoint: [WT_VERB_CHECKPOINT_PROGRESS] saving checkpoint snapshot min: 1, snapshot max: 1 snapshot count: 0, oldest timestamp: (0, 0) , meta checkpoint timestamp: (0, 0) base write gen: 253"}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:20.245+00:00"},"s":"I",  "c":"STORAGE",  "id":4795906, "ctx":"initandlisten","msg":"WiredTiger opened","attr":{"durationMillis":1040}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:20.245+00:00"},"s":"I",  "c":"RECOVERY", "id":23987,   "ctx":"initandlisten","msg":"WiredTiger recoveryTimestamp","attr":{"recoveryTimestamp":{"$timestamp":{"t":0,"i":0}}}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:20.247+00:00"},"s":"I",  "c":"STORAGE",  "id":4366408, "ctx":"initandlisten","msg":"No table logging settings modifications are required for existing WiredTiger tables","attr":{"loggingEnabled":true}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:20.249+00:00"},"s":"I",  "c":"STORAGE",  "id":22262,   "ctx":"initandlisten","msg":"Timestamp monitor starting"}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:20.259+00:00"},"s":"W",  "c":"CONTROL",  "id":22120,   "ctx":"initandlisten","msg":"Access control is not enabled for the database. Read and write access to data and configuration is unrestricted","tags":["startupWarnings"]}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:20.265+00:00"},"s":"I",  "c":"NETWORK",  "id":4915702, "ctx":"initandlisten","msg":"Updated wire specification","attr":{"oldSpec":{"incomingExternalClient":{"minWireVersion":0,"maxWireVersion":13},"incomingInternalClient":{"minWireVersion":0,"maxWireVersion":13},"outgoing":{"minWireVersion":0,"maxWireVersion":13},"isInternalClient":true},"newSpec":{"incomingExternalClient":{"minWireVersion":0,"maxWireVersion":13},"incomingInternalClient":{"minWireVersion":13,"maxWireVersion":13},"outgoing":{"minWireVersion":13,"maxWireVersion":13},"isInternalClient":true}}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:20.265+00:00"},"s":"I",  "c":"STORAGE",  "id":5071100, "ctx":"initandlisten","msg":"Clearing temp directory"}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:20.268+00:00"},"s":"I",  "c":"CONTROL",  "id":20536,   "ctx":"initandlisten","msg":"Flow Control is enabled on this deployment"}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:20.272+00:00"},"s":"I",  "c":"FTDC",     "id":20625,   "ctx":"initandlisten","msg":"Initializing full-time diagnostic data capture","attr":{"dataDirectory":"/data/db/diagnostic.data"}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:20.278+00:00"},"s":"I",  "c":"NETWORK",  "id":23015,   "ctx":"listener","msg":"Listening on","attr":{"address":"/tmp/mongodb-27017.sock"}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:20.278+00:00"},"s":"I",  "c":"NETWORK",  "id":23015,   "ctx":"listener","msg":"Listening on","attr":{"address":"0.0.0.0"}}
+[36mmongo    |[0m {"t":{"$date":"2021-09-28T20:43:20.279+00:00"},"s":"I",  "c":"NETWORK",  "id":23016,   "ctx":"listener","msg":"Waiting for connections","attr":{"port":27017,"ssl":"off"}}
+[33mnode     |[0m Tue, 28 Sep 2021 20:43:25 GMT body-parser deprecated undefined extended: provide extended option at src/app.ts:11:27
+[33mnode     |[0m Express is listening on port 8081
+Gracefully stopping... (press Ctrl+C again to force)
