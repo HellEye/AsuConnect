@@ -1,11 +1,12 @@
 import Post, { IPost } from "../Models/Post.model"
-import { getCrud } from "./ControllerFactory"
+import getCrud from "./ControllerFactory"
 
-const crud = getCrud<IPost>(Post)
-	.many("r")
-	.one("c")
-	.key("id")
-	.one("rud")
+const crud = getCrud<IPost>("/api/posts", Post)
+	.get("/", ["title", "subTitle", "text"])
+	.get("/:id")
+	.add("/")
+	.update("/:id")
+	.delete("/:id")
 	.finish()
 
 export default crud

@@ -2,13 +2,13 @@ import mongoose, { Schema, Document, ObjectId } from "mongoose"
 
 export interface IRoom extends Document {
 	_id: ObjectId
-	location: {
+	position: {
 		x: Number
 		y: Number
 	}
 }
 
-const locationSchema: Schema = new Schema({
+const positionSchema: Schema = new Schema({
 	x: {
 		type: Number,
 		required: true,
@@ -20,9 +20,10 @@ const locationSchema: Schema = new Schema({
 })
 
 const roomSchema: Schema = new Schema({
-	location: {
-		type: locationSchema,
+	position: {
+		type: positionSchema,
 		required: true,
+		_id: false,
 	},
 })
 
