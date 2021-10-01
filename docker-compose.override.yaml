@@ -21,23 +21,14 @@ services:
     environment:
       - PORT=${PORT}
       - MONGO_URL=${MONGO_URL}
+      - NODE_ENV=development
     ports:
       - 8081:8081
+      - 9229:9229
     links:
       - mongo
     depends_on:
       - mongo
-  # in case node reload doesn't work
-  # live-reloader:
-  #   image: apogiatzis/livereloading
-  #   container_name: livereloader
-  #   privileged: true
-  #   environment:
-  #     - RELOAD_DELAY=1.5 # seconds
-  #     - RELOAD_CONTAINER=app
-  #   volumes:
-  #     - "/var/run/docker.sock:/var/run/docker.sock"
-  #     - "./src:./usr/src"
 
 volumes:
   mongo-data:

@@ -1,8 +1,7 @@
-import User, { IUser } from "../Models/User.model"
+import Post, { IPost } from "../Models/Post.model"
 import { getCrud } from "./ControllerFactory"
 
-User.findOne()
-const crud = getCrud<IUser>(User)
+const crud = getCrud<IPost>(Post)
 	.many("r")
 	.one("c")
 	.key("id")

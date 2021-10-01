@@ -1,10 +1,7 @@
-import {
-	ControllerOut,
-	GenFunctionDict,
-	Method,
-} from "../Controllers/ControllerFactory"
+import { ControllerOut, Method } from "../Controllers/ControllerFactory"
 import { RoutesInput } from "../Types/route"
 import { Document } from "mongoose"
+import { RequestHandler } from "express"
 
 type GetApiInput<D extends Document> = {
 	app: RoutesInput
@@ -17,17 +14,7 @@ type GetApiOut = {
 		[key: string]: () => any
 	}
 }
-const getFindObj = <D extends Document>(req: Request) => {
-	const findObj = {}
-}
-const deleteFunc = <D extends Document>(
-	key: string,
-	controllers: GenFunctionDict<D>
-) => {
-	return (req: Request, res: Response) => {
-		controllers[key].func()
-	}
-}
+
 //TODO refactor this shit cuz it sucks
 const getApi = <D extends Document>({
 	app,
@@ -36,7 +23,8 @@ const getApi = <D extends Document>({
 }: GetApiInput<D>) => {
 	const out: GetApiOut = {}
 
-	const override = (method: Method, apiPath: string, func: any) => {
+	const override = (method: Method, apiPath: string, func: RequestHandler) => {
+		if (!out[method]) out[method] = {}
 		out[method][apiPath] = () => {
 			app[method](apiPath, func)
 		}
@@ -59,7 +47,7 @@ const getApi = <D extends Document>({
 			if (dbKey === "id" || !dbKey) {
 				apiPath = `${basePath}/${crud.model.modelName[0].toLowerCase()}${crud.model.modelName.slice(
 					1
-				)}${many ? "s" : ""}/${dbKey ? ":" + dbKey : ""}`
+				)}${many ? "s" : ""}${dbKey ? "/:" + dbKey : ""}`
 			} else {
 				apiPath = ``
 				// TODO potentially work with query parameters?
@@ -69,21 +57,25 @@ const getApi = <D extends Document>({
 			if (!out[method]) out[method] = {}
 
 			out[method][apiPath] = () => {
-				app[method](apiPath, async (req, res) => {
-					const findObj: any = {}
-					findObj[dbKey] = req.params[dbKey]
-					const data = { ...req.body }
-					if (dbKey) delete data[dbKey]
+				try {
+					app[method](apiPath, async (req, res) => {
+						const findObj: any = {}
+						if (dbKey) findObj[dbKey] = req.params[dbKey]
+						const data = { ...req.body }
+						if (dbKey) delete data[dbKey]
 
-					return crud.controllers[key]
-						.func({ findObj, data })
-						.then((data) => {
-							return res.send(data)
-						})
-						.catch((e: Error) => {
-							res.status(500).send({ success: false })
-						})
-				})
+						return crud.controllers[key]
+							.func({ findObj, data })
+							.then((data) => {
+								return res.send(data)
+							})
+							.catch((e: Error) => {
+								res.status(500).send({ success: false })
+							})
+					})
+				} catch (e) {
+					throw e
+				}
 			}
 		}
 		return { override, finish }

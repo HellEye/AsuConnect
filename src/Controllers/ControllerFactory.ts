@@ -1,28 +1,20 @@
-import { ObjectId, Model, Document, FilterQuery, UpdateQuery } from "mongoose"
+import { Model, Document, Query, EnforceDocument } from "mongoose"
 import { Nullable } from "../Types/common"
 
-type GeneratorReturns<D extends Document> =
-	| Promise<D>
-	| Promise<D[]>
-	| Promise<Nullable<D>>
-	| Promise<void>
+type GenFunctionPlaceholder = () => never
+type OutQuery<D extends Document> = Query<D, D> | Query<D[], D> | Query<any, D>
+export type GeneratorInput<D extends Document> = {
+	findObj?: Partial<D>
+	data?: Partial<D> | Partial<D>[]
+}
 
-type GenFunctionPlaceholder<D extends Document> = () => never
+type GenFunctionBase<D extends Document> = ({
+	findObj,
+	data,
+}: GeneratorInput<D>) => OutQuery<D>
 
-type GenFunctionEmpty<D extends Document> = () => GeneratorReturns<D>
-
-type GenFunctionValue<D extends Document> = (
-	value: any | any[]
-) => GeneratorReturns<D>
-
-type GenFunctionFindNew<D extends Document> = (
-	findObjValue: any | any[],
-	newObj: Partial<D>
-) => GeneratorReturns<D>
-
-type GenFunction<D extends Document> =
-	| (GenFunctionFindNew<D> & GenFunctionValue<D> & GenFunctionEmpty<D>)
-	| GenFunctionPlaceholder<D>
+type GenFunction<D extends Document> = GenFunctionBase<D> &
+	GenFunctionPlaceholder
 
 export type Method = "get" | "put" | "post" | "delete"
 
@@ -64,108 +56,73 @@ type GenCrudReturnMany<D extends Document> = {
 	one: GenCrudOne<D>
 	key: GenCrudKey<D>
 }
-
-export type GetCrudReturn<D extends Document> = {
+type GetCrudReturn<D extends Document> = {
 	key: GenCrudKey<D>
 	many: GenCrudMany<D>
 }
 
-export type GeneratorInput<D extends Document> = {
-	findObj: Partial<D>
-	data: Partial<D> | Partial<D>[]
-}
-
 const generators: { [key: string]: any } = {
-	getOne: <D extends Document>(model: Model<D>, key: string) => {
-		return async ({
-			findObj,
-			data,
-		}: GeneratorInput<D>): Promise<Nullable<D>> => {
-			return await model.findOne(findObj as any).catch((e) => {
-				throw e
-			})
-		}
-	},
+	getOne:
+		<D extends Document>(model: Model<D>, key: string) =>
+		({ findObj = {}, data = {} }: GeneratorInput<D>) => {
+			return model.findOne(findObj as any)
+		},
 	getMany:
 		<D extends Document>(model: Model<D>, key: string) =>
-		async ({ findObj, data }: GeneratorInput<D>): Promise<D[]> => {
-			return await model.find(findObj as any).catch((e) => {
-				throw e
-			})
+		({ findObj = {}, data = {} }: GeneratorInput<D>) => {
+			return model.find(findObj as any)
 		},
 
 	insertOne:
 		<D extends Document>(model: Model<D>) =>
-		async ({ findObj, data }: GeneratorInput<D>): Promise<D> => {
-			return await model.create(data).catch((e) => {
-				throw e
-			})
+		({ findObj = {}, data = {} }: GeneratorInput<D>) => {
+			return model.create(data)
 		},
 	insertMany:
 		<D extends Document>(model: Model<D>) =>
-		async ({ findObj, data }: GeneratorInput<D>): Promise<D[]> => {
-			return await model.insertMany(data as any).catch((e) => {
-				throw e
-			})
+		({ findObj = {}, data = {} }: GeneratorInput<D>) => {
+			return model.insertMany(data as any)
 		},
 
 	updateOne:
 		<D extends Document>(model: Model<D>, key: string) =>
-		async ({ findObj, data }: GeneratorInput<D>) => {
-			return await model
-				.findOneAndUpdate(findObj as any, data as any, {
-					new: true,
-				})
-				.catch((e) => {
-					throw e
-				})
-		},
+		({ findObj = {}, data = {} }: GeneratorInput<D>) =>
+			model.findOneAndUpdate(findObj as any, data as any, {
+				new: true,
+			}),
 
 	updateMany:
 		<D extends Document>(model: Model<D>, key: string) =>
-		async ({ findObj, data }: GeneratorInput<D>) => {
-			return await model
-				.findOneAndUpdate(findObj as any, data as any, {
-					new: true,
-				})
-				.catch((e) => {
-					throw e
-				})
-		},
+		({ findObj = {}, data = {} }: GeneratorInput<D>) =>
+			model.updateMany(findObj as any, data as any, {
+				new: true,
+			}),
+
 	deleteOne:
 		<D extends Document>(model: Model<D>, key: string) =>
-		async ({ findObj, data }: GeneratorInput<D>) => {
-			return await model.findOneAndDelete(findObj as any).catch((e) => {
-				throw e
-			})
-		},
+		({ findObj = {}, data = {} }: GeneratorInput<D>) =>
+			model.findOneAndDelete(findObj as any),
 	deleteMany: <D extends Document>(model: Model<D>, key: string) => {
 		console.warn(
 			`You've just generated a deleteMany function for ${model.name}`
 		)
 		console.warn("WARNING, this wrecks stuff if not handled with care!")
-		return async ({ findObj, data }: GeneratorInput<D>) => {
-			return await model.deleteMany(findObj as any).catch((e) => {
-				throw e
-			})
+		return ({ findObj = {}, data = {} }: GeneratorInput<D>) => {
+			return model.deleteMany(findObj as any)
 		}
 	},
 	getAll:
 		<D extends Document>(model: Model<D>) =>
-		async ({ findObj, data }: GeneratorInput<D>): Promise<D[]> => {
-			return await model.find({}).catch((e) => {
-				throw e
-			})
+		({ findObj = {}, data = {} }: GeneratorInput<D>) => {
+			return model.find({})
 		},
 	deleteAll: <D extends Document>(model: Model<D>) => {
 		console.warn(`You've just generated a deleteAll function for ${model.name}`)
 		console.warn(
 			"!!!!!WARNING, this really wrecks stuff if not used just for debugging/testing!"
 		)
-		return async ({ findObj, data }: GeneratorInput<D>) => {
-			return await model.deleteMany({}).catch((e) => {
-				throw e
-			})
+		return ({ findObj = {}, data = {} }: GeneratorInput<D>) => {
+			return model.deleteMany({})
 		}
 	},
 }

@@ -1,6 +1,6 @@
 FROM node:14
 WORKDIR /usr
-COPY package.json ./
+COPY package*.json ./
 COPY tsconfig.json ./
 COPY src ./src
 RUN npm install
