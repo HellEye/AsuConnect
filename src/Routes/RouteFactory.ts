@@ -5,12 +5,14 @@ import {
 	HttpMethods,
 	generators,
 } from "../Controllers/ControllerFactory"
+import { Nullable } from "../Types/common"
 interface ExtraDbMethods {
 	dbFunc: string
-	params: any
+	params: ((req: Request) => any) | any
 }
 type Method = "get" | "post" | "put" | "delete"
-type QueryParams = { [key: string]: string }
+type QueryParamValues = string | Object
+type QueryParams = { [key: string]: QueryParamValues }
 interface ApiObject<D extends Document> {
 	method: Method
 	apiPath: string
@@ -53,6 +55,11 @@ const getDbFunc = (method: HttpMethods, many: boolean = false): DbFunctions => {
 			return `delete${many ? "Many" : "One"}`
 	}
 }
+type ControlParam = "sort"
+
+const ControlParams: ControlParam[] = ["sort"]
+
+const FuzzyMatchOperator = "~"
 
 const getApi = <D extends Document>(
 	app: Application,
@@ -65,14 +72,48 @@ const getApi = <D extends Document>(
 		newApi.apiPath = `${data.basePath}${c.path}`
 		newApi.method = c.method
 		newApi.dbFunc = getDbFunc(c.method, c.many)
+
+		c.allowedQueryParams?.forEach((q: string | ControlParam) => {
+			if (ControlParams.findIndex((param) => param === q) !== -1) {
+				if (!newApi.extra) newApi.extra = []
+				switch (q) {
+					case "sort":
+						newApi.extra.push({
+							dbFunc: "sort",
+							params: (req: Request): Nullable<{}> => {
+								if (!req.query.sort) return null
+								if (typeof req.query.sort === "string")
+									return JSON.parse(req.query.sort)
+								return req.query.sort
+							},
+						})
+				}
+			}
+		})
 		newApi.params = (req: Request) => {
+			//TODO partial matching of query params, maybe with parameter given in get() in controller
+			//// actually use ?name=~foo for fuzzy?
+			//// other candidates: @, ^, ;, :, |, $, !, _
+			//// probably reserve $ for writing actual mongo querries
 			const findObj: QueryParams = {} as QueryParams
 			for (let [key, param] of Object.entries(req.params)) {
 				if (key === "id") findObj._id = param
 				else findObj[key] = param
 			}
-			c.allowedQueryParams?.forEach((q: string) => {
-				if (q) findObj[q] = req.query[q] as string
+			c.allowedQueryParams?.forEach((q: string | ControlParam) => {
+				if (ControlParams.findIndex((param) => param === q) !== -1) return
+				const queryValue = req.query[q]
+				if (queryValue) {
+					// fuzzy matching
+					if (
+						typeof queryValue === "string" &&
+						queryValue.charAt(0) === FuzzyMatchOperator
+					) {
+						findObj[q] = { $regex: queryValue.slice(1) }
+					} else {
+						findObj[q] = queryValue as string
+					}
+				}
 			})
 			return findObj
 		}
@@ -114,7 +155,11 @@ const getApi = <D extends Document>(
 				})
 				if (obj.extra) {
 					for (let extra of obj.extra) {
-						query[extra.dbFunc](extra.params)
+						const queryParams =
+							typeof extra.params === "function"
+								? extra.params(req)
+								: extra.params
+						if (queryParams) query[extra.dbFunc](queryParams)
 					}
 				}
 				query.then(obj.then(res)).catch(obj.catch(res))

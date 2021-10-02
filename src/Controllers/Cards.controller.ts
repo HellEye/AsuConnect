@@ -1,9 +1,9 @@
-import User, { IUser } from "../Models/User.model"
+import Card, { ICard } from "../Models/Cards.model"
 import getCrud from "./ControllerFactory"
 
-const crud = getCrud<IUser>("/api/users", User)
+const crud = getCrud<ICard>("/api/cards", Card)
 	.get("/:id")
-	.get("/", ["email", "name"])
+	.get("/", ["name"])
 	.update("/:id")
 	.add("/")
 	.delete("/:id")

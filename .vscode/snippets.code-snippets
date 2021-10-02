@@ -1,0 +1,56 @@
+{
+	"New routes": {
+		"prefix": "routes",
+		"body": [
+			"import data from \"../Controllers/$1s.controller\"",
+			"import { RoutesInput } from \"../Types/route\"",
+			"import { I$1 } from \"../Models/$1s.model\"",
+			"import getApi from \"./RouteFactory\"",
+			"",
+			"const routes = (app: RoutesInput) => {",
+			"\tgetApi<I$1>(app, data).finish()",
+			"}",
+			"",
+			"export default routes",
+			"",
+			""
+		],
+		"description": "Adds a new route"
+	},
+	"New Controller": {
+		"prefix": "controller",
+		"body": [
+			"import $1, { I$1 } from \"../Models/$1s.model\"",
+			"import getCrud from \"./ControllerFactory\"",
+			"",
+			"const crud = getCrud<I$1>(\"/api/$2\", $1)",
+			"\t.get(\"/:id\")",
+			"\t.get(\"/\",[$3])",
+			"\t.update(\"/:id\")",
+			"\t.add(\"/\")",
+			"\t.delete(\"/:id\")$4",
+			"\t.finish()",
+			"export default crud",
+			""
+		],
+		"description": "Adds a new controller"
+	},
+	"New Model": {
+		"prefix": "model",
+		"body": [
+			"import mongoose, { Schema, Document, ObjectId } from \"mongoose\"",
+			"",
+			"export interface I$1 extends Document {",
+			"\t$2",
+			"}",
+			"",
+			"const $1Schema: Schema = new Schema({",
+			"\t$3",
+			"})",
+			"",
+			"export default mongoose.model<I$1>(\"$1s\", $1Schema)",
+			""
+		],
+		"description": "Adds a new model"
+	}
+}

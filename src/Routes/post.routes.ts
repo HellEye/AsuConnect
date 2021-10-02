@@ -5,14 +5,16 @@ import data from "../Controllers/Post.controller"
 
 const routes = (app: RoutesInput) => {
 	getApi<IPost>(app, data)
-		.override("get", "/", {
-			extra: [
-				{
-					dbFunc: "sort",
-					params: { title: "asc" },
-				},
-			],
-		})
+		// .override("get", "/", {
+		// 	extra: [
+		// 		{
+		// 			dbFunc: "sort",
+		// 			params: (req) => {
+		// 				return { title: "asc" }
+		// 			},
+		// 		},
+		// 	],
+		// })
 		.finish()
 }
 

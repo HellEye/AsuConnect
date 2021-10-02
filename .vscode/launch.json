@@ -6,7 +6,6 @@
 			"request": "attach",
 			"name": "Attach to docker",
 			"restart": true,
-			"port": 9229,
 			"localRoot": "${workspaceRoot}",
 			"remoteRoot": "/usr"
 		}
