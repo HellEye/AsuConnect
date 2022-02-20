@@ -1,44 +1,56 @@
-import express, { Application, Request, Response } from "express"
+import express from "express"
+import reflectMetadata from "reflect-metadata/"
+import cookieParser from "cookie-parser"
+import { buildSchema } from "type-graphql"
 import connect from "./connect"
-import Routes from "./Routes"
 
-const app: Application = express()
-app.use(express.urlencoded({ extended: true }))
-app.use(express.json())
+import { resolvers, schemas } from "./graphql"
+import { ApolloServer } from "apollo-server-express"
+import {
+	ApolloServerPluginLandingPageGraphQLPlayground,
+	ApolloServerPluginLandingPageProductionDefault,
+	ApolloServerPluginSchemaReporting,
+} from "apollo-server-core"
+const bootstrap = async () => {
+	//Build schema
+	// const schema = await buildSchema({
+	// 	// resolvers,
+	// 	// authChecker
+	// })
+	//init express
+	const app = express()
+	//apply express middleware
+	app.use(cookieParser())
+	app.get("/", async (req, res) => {
+		res.json(schemas)
+	})
+	//create apollo server
+	// const server = new ApolloServer({
+	// 	// schema,
+	// 	apollo: {
+	// 		graphRef: "asuconnect",
+	// 	},
+	// 	context: (ctx) => {
+	// 		return ctx
+	// 	},
+	// 	plugins: [
+	// 		process.env.NODE_ENV === "production"
+	// 			? ApolloServerPluginLandingPageProductionDefault()
+	// 			: ApolloServerPluginLandingPageGraphQLPlayground(),
+	// 		ApolloServerPluginSchemaReporting(),
+	// 	],
+	// })
+	//start server
+	// await server.start()
+	//apply server middleware
+	// server.applyMiddleware({ app })
+	//connect to db
+	connect(process.env.MONGO_URL || "")
+	//listen
+	const PORT = process.env.PORT 
+	app.listen(PORT, () => {
+		console.log(`App listening on port ${PORT}`)
+	})
+}
 
-app.get("/", (req: Request, res: Response) => {
-	res.send("TS App is running")
-})
-
-app.get("/api", (req, res) => {
-	res.send(
-		app._router.stack
-			.map((r: any) => {
-				if (!r.route) return ""
-				const method = Object.keys(r.route.methods)[0]
-				return `${method}:${r.route.path}`
-			})
-			.filter((v: string) => v !== "")
-	)
-})
-
-const PORT = process.env.PORT || "wrong env port"
-const db = process.env.MONGO_URL || "wrong env url"
-
-connect({ db })
-
-Routes(app)
-
-app.listen(PORT, () => {
-	console.log(`Express is listening on port ${PORT}`)
-})
-
-/** TODO
- * user_class
- * classes
- * user_cards
- * cards
- * items
- * item_sales
- *
- * */
+bootstrap()

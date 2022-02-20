@@ -1,10 +1,6 @@
 import mongoose from "mongoose"
 
-type DBInput = {
-	db: string
-}
-
-export default ({ db }: DBInput) => {
+export default ( db : string) => {
 	const connect = () => {
 		mongoose
 			.connect(db)
